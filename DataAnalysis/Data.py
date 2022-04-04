@@ -77,7 +77,7 @@ class Data:
                     if key2 in cols and include:
                         continue
                     elif key2 not in cols and not include:
-                        continue
+                        continue#
                     new_df[key2].append(rowData[key2])
         return Data(self.title,new_df)
 

@@ -55,3 +55,9 @@ class Data:
             doc.save_file()
         else:
             doc.save_file(path=path)
+
+    def tidy_merge(self,cols,newColKey:str, newColVal:str):
+        old_df = self.vals
+        for row in range((self.vals.iloc[:,1])):
+            pass
+

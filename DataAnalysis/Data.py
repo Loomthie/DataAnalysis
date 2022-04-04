@@ -49,7 +49,12 @@ class Data:
                f'{st_dev_msg}'
 
     def store_data_excel(self,fname,path=None):
-        doc = ExcelFile(self.vals,fileName=fname)
+
+        df = {"Column Names": [key for key in self.vals], "Mean": [self.mean[key] for key in self.mean],
+              "Standard Deviation": [self.st_dev[key] for key in self.st_dev]}
+        df = pd.DataFrame(df)
+        df = pd.concat([self.vals,df],axis=1)
+        doc = ExcelFile(df,fileName=fname)
         if path is None:
             doc.save_file()
         else:
@@ -77,7 +82,7 @@ class Data:
                     if key2 in cols and include:
                         continue
                     elif key2 not in cols and not include:
-                        continue#
+                        continue
                     new_df[key2].append(rowData[key2])
         return Data(self.title,new_df)
 

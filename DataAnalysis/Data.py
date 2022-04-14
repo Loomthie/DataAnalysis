@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import xlsxwriter
 from DataAnalysis.FileFormat import *
 
 
@@ -9,6 +10,7 @@ class Data:
         self.mean = {}
         self.st_dev = {}
         self.title = title
+        self.sub_data_sets = {}
         max_length = max([len(vals[key]) for key in vals])
         for key in vals:
             while len(vals[key]) < max_length:
@@ -49,16 +51,21 @@ class Data:
                f'{st_dev_msg}'
 
     def store_data_excel(self,fname,path=None):
-
-        df = {"Column Names": [key for key in self.vals], "Mean": [self.mean[key] for key in self.mean],
-              "Standard Deviation": [self.st_dev[key] for key in self.st_dev]}
-        df = pd.DataFrame(df)
-        df = pd.concat([self.vals,df],axis=1)
-        doc = ExcelFile(df,fileName=fname)
-        if path is None:
-            doc.save_file()
-        else:
-            doc.save_file(path=path)
+        wb = xlsxwriter.Workbook(fname,options={"nan_inf_to_errors":True})
+        ws = wb.add_worksheet("Complete Data Set")
+        ws.write_row(row=0,col=0,data=['Title:',self.title])
+        ws.write_row(row=2,col=0,data=[i for i in self.vals])
+        for row in range(len(self.vals.iloc[:,1])):
+            ws.write_row(row=row+3,col=0,data=[self.vals.iloc[row,:][key] for key in self.vals])
+        for key in self.sub_data_sets:
+            subData:Data
+            subData = self.sub_data_sets[key]
+            ws = wb.add_worksheet(key)
+            ws.write_row(row=0,col=0,data=['Title:',subData.title])
+            ws.write_row(row=2,col=0,data=[i for i in subData.vals])
+            for row in range(len(subData.vals.iloc[:,1])):
+                ws.write_row(row=row+3,col=0,data=[subData.vals.iloc[row,:][item] for item in subData.vals])
+        wb.close()
 
     def tidy_merge(self,cols,newColKey:str, newColVal:str, include=True):
         new_df = {}
@@ -85,6 +92,19 @@ class Data:
                         continue
                     new_df[key2].append(rowData[key2])
         return Data(self.title,new_df)
+
+    def create_subset(self,title,func):
+        new_data = {}
+        for key in self.vals:
+            new_data[key] = []
+        for row in self.vals.iloc:
+            if func(row):
+                for key in new_data:
+                    new_data[key].append(row[key])
+        self.sub_data_sets[title] = Data(title,new_data)
+        return Data(title,new_data)
+
+
 
 
 

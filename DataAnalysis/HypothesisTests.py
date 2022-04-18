@@ -78,12 +78,16 @@ def TwoSampleT(sample_1,sample_2,same_sigma=True,alpha=0.05,delta=0,two_tail=Tru
         t = (x1-x2-delta)/(s1**2/n1-s2**2/n2)**0.5
         df = (s1**2/n1+s2**2/n2)**2/((s1**2/n1)/(n1-1) + (s2**2/n2)/(n2-1))
         df = int(df)
-    #print(t)
+        CI = 'N/A'
+        sp=0
+    t_crit = stats.t.ppf(alpha,df)
+    CI = [x1-x2-t_crit*sp*np.sqrt(1/n1+1/n2),x1-x2+t_crit*sp*np.sqrt(1/n1+1/n2)]
     res.conditions.append(f'df = {df}')
     res.conditions.append(f'x1 = {x1}')
     res.conditions.append(f's1 = {s1}')
     res.conditions.append(f'x2 = {x2}')
     res.conditions.append(f's2 = {s2}')
+    res.conditions.append(f'CI = {CI}')
     if two_tail:
         p_value = stats.t.sf(abs(t),df=df)*2
     else:

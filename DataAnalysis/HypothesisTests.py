@@ -80,8 +80,10 @@ def TwoSampleT(sample_1,sample_2,same_sigma=True,alpha=0.05,delta=0,two_tail=Tru
         df = int(df)
         CI = 'N/A'
         sp=0
-    t_crit = stats.t.ppf(alpha,df)
+    t_crit = stats.t.ppf(alpha/2,df)
     CI = [x1-x2-t_crit*sp*np.sqrt(1/n1+1/n2),x1-x2+t_crit*sp*np.sqrt(1/n1+1/n2)]
+    if CI[0]>CI[1]:
+        CI[0],CI[1] = CI[1],CI[0]
     res.conditions.append(f'df = {df}')
     res.conditions.append(f'x1 = {x1}')
     res.conditions.append(f's1 = {s1}')

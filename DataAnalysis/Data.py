@@ -51,6 +51,17 @@ class Data:
                f'{st_dev_msg}'
 
     def __getitem__(self, item):
+        try:
+            item = int(item)
+            i = 0
+            for key in self.vals:
+                if i==item:
+                    item=key
+                    break
+                else:
+                    i += 1
+        except ValueError:
+            pass
         return list(self.vals[item])
 
     def store_data_excel(self,fname,path=None):

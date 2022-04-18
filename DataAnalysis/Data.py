@@ -50,6 +50,9 @@ class Data:
                f'Standard Deviations:\n' \
                f'{st_dev_msg}'
 
+    def __getitem__(self, item):
+        return list(self.vals[item])
+
     def store_data_excel(self,fname,path=None):
         wb = xlsxwriter.Workbook(fname,options={"nan_inf_to_errors":True})
         ws = wb.add_worksheet("Complete Data Set")
